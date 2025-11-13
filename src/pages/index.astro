@@ -1,0 +1,156 @@
+---
+const url = new URL(Astro.request.url);
+const pokemonParam = url.searchParams.get('pokemon');
+const openModalId = pokemonParam ? parseInt(pokemonParam) : null;
+
+import AdoptionCard from '../components/AdoptionCard.astro';
+import AdoptionModal from '../components/AdoptionModal.astro';
+
+declare global {
+  interface Window {
+    openPokemonModal: (pokemon: any) => void;
+  }
+}
+
+interface Pokemon {
+  name: string;
+  url: string;
+}
+
+interface ApiResponse {
+  count: number;
+  results: Pokemon[];
+}
+
+const countResponse = await fetch('https://pokeapi.co/api/v2/pokemon-species/');
+const countData = await countResponse.json() as { count: number };
+const totalPokemon = countData.count;
+
+const randomIds: number[] = [];
+while (randomIds.length < 20) {
+  const id = Math.floor(Math.random() * totalPokemon) + 1;
+  if (!randomIds.includes(id)) randomIds.push(id);
+}
+
+const pokemonDetails = await Promise.all(
+  randomIds.map(async (id) => {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`);
+    return await res.json();
+  })
+);
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokéAdopta | ¡Adopta tu compañero ideal!</title>
+    <link rel="icon" href="/favicon.svg" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+      window.openPokemonModal = function() {};
+    </script>
+
+    <style>
+      :root {
+        --primary: #f4a261;
+        --secondary: #2a9d8f;
+        --accent: #e76f51;
+        --light: #fdf0d5;
+        --dark: #264653;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #fdf0d5, #f4a261);
+        min-height: 100vh;
+        color: var(--dark);
+      }
+
+      header {
+        text-align: center;
+        padding: 2rem 1rem;
+        background: rgba(244, 162, 97, 0.9);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+
+      h1 { font-size: 2.8rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+      .subtitle { font-size: 1.2rem; margin-top: 0.5rem; opacity: 0.95; }
+
+      .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+      .intro {
+        text-align: center;
+        margin-bottom: 2rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+      }
+
+      .intro p {
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+        color: #555;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .refresh-hint {
+  text-align: center;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #666;
+        font-style: italic;
+      }
+
+      @media (max-width: 600px) {
+        .grid { grid-template-columns: repeat(2, 1fr); }
+        h1 { font-size: 2.2rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PokéAdopta</h1>
+      <p class="subtitle">¡Encuentra a tu compañero Pokémon ideal!</p>
+    </header>
+
+    <div class="container">
+      <div class="intro">
+        <p>
+          En <strong>PokéAdopta</strong> creemos que todo Pokémon merece un hogar lleno de amor, 
+          aventuras y Pokébolas. <strong>¡Cada vez que recargas, aparecen nuevos amigos!</strong>
+        </p>
+      </div>
+
+      <main class="grid">
+        {pokemonDetails.map((poke) => (
+          <AdoptionCard 
+            name={poke.name} 
+            pokemonData={poke}
+          />
+        ))}
+      </main>
+
+      <p class="refresh-hint">
+        Recarga la página para ver nuevos Pokémon disponibles para adopción
+      </p>
+    </div>
+
+    <!-- Modal reutilizable -->
+    <AdoptionModal pokemon={pokemonDetails[0] || {}} />
+  </body>
+</html>

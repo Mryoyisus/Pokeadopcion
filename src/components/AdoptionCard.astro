@@ -1,0 +1,119 @@
+---
+export interface Props {
+  name: string;
+  pokemonData: any;
+}
+
+const { name, pokemonData } = Astro.props;
+const id = pokemonData.id;
+const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+
+const phrases = [
+  "¡Estoy listo para una aventura contigo!",
+  "¿Me adoptarás y seremos amigos para siempre?",
+  "¡Prometo ser el mejor compañero de equipo!",
+  "¡Juntos conquistaremos el mundo Pokémon!",
+  "¡Adóptame y llenaré tu vida de alegría!",
+  "¡Seré tu amigo fiel en cada batalla!",
+  "¡Vamos a explorar el mundo juntos!",
+  "¡Conmigo, cada día será una nueva aventura!",
+  "¡Adóptame y haremos historia juntos!",
+  "¡Estoy esperando por ti para comenzar nuestra aventura!"
+];
+const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+---
+
+<article class="adoption-card">
+  <div 
+    class="image-container" 
+    onclick={`openPokemonModal(${JSON.stringify(pokemonData).replace(/</g, '\\u003c')})`}
+  >
+    <img src={imageUrl} alt={name} loading="lazy" />
+  </div>
+  <div class="info">
+    <h3>{name.charAt(0).toUpperCase() + name.slice(1)}</h3>
+    <p class="phrase">{randomPhrase}</p>
+    <button 
+      class="adopt-btn"
+      onclick={`event.stopPropagation(); openPokemonModal(${JSON.stringify(pokemonData).replace(/</g, '\\u003c')})`}
+    >
+      ¡Adóptame! Corazón
+    </button>
+  </div>
+</article>
+
+<style>
+  .adoption-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .adoption-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 32px rgba(244, 162, 97, 0.3);
+  }
+
+  .image-container {
+    background: linear-gradient(135deg, #f4a261, #e76f51);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .image-container img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  }
+
+  .info {
+    padding: 1.2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+  }
+
+  .info h3 {
+    color: #264653;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .phrase {
+    font-size: 0.9rem;
+    color: #e76f51;
+    font-style: italic;
+    margin-bottom: 1rem;
+    min-height: 2.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .adopt-btn {
+    background: #2a9d8f;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.2rem;
+    border-radius: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .adopt-btn:hover {
+    background: #21867a;
+    transform: scale(1.05);
+  }
+</style>

@@ -1,0 +1,218 @@
+---
+
+
+export interface Props {
+  pokemon: any;
+}
+
+const { pokemon } = Astro.props;
+const types = pokemon.types?.map((t: any) => t.type.name) || [];
+---
+
+<div id="pokemon-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close">×</span>
+
+    <div class="modal-header">
+      <img id="modal-img" src="" alt="" class="modal-img" />
+      <h2 id="modal-name"></h2>
+      <p class="id" id="modal-id"></p>
+    </div>
+
+    <div class="modal-body">
+      <div class="info-grid">
+        <div>
+          <strong>Tipo:</strong>
+          <span class="types" id="modal-types">
+            {types.map((type: string) => (
+              <span class={`type ${type}`}>{type}</span>
+            ))}
+          </span>
+        </div>
+        <div><strong>Altura:</strong> <span id="modal-height"></span> m</div>
+        <div><strong>Peso:</strong> <span id="modal-weight"></span> kg</div>
+        <div><strong>Habilidades:</strong> <span id="modal-abilities"></span></div>
+      </div>
+
+      <h3>Estadísticas Base</h3>
+      <div class="stats" id="modal-stats"></div>
+
+      <div class="adopt-action">
+        <button id="adopt-btn">¡Adóptame! Confeti</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #aaa;
+  }
+
+  .close:hover { color: #e76f51; }
+
+  .modal-header {
+    text-align: center;
+    padding: 2rem 1.5rem 1rem;
+    background: linear-gradient(135deg, #f4a261, #e76f51);
+    color: white;
+    border-radius: 24px 24px 0 0;
+    margin: -1px;
+  }
+
+  .modal-img {
+    width: 180px;
+    height: 180px;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+  }
+
+  .id { font-size: 1.1rem; opacity: 0.9; margin-top: 0.5rem; }
+
+  .modal-body { padding: 1.5rem; }
+
+  .info-grid {
+    display: grid;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .types {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.3rem;
+  }
+
+  .type {
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: white;
+    text-transform: capitalize;
+  }
+
+  /* Tipos de Pokémon */
+  .type.fire { background: #ee8130; }
+  .type.water { background: #6390f0; }
+  .type.grass { background: #7ac74c; }
+  .type.electric { background: #f7d02c; }
+  .type.psychic { background: #f95587; }
+  .type.ice { background: #96d9d6; }
+  .type.dragon { background: #6f35fc; }
+  .type.dark { background: #705746; }
+  .type.fairy { background: #d685ad; }
+  .type.normal { background: #a8a77a; }
+  .type.fighting { background: #c22e28; }
+  .type.flying { background: #a98ff3; }
+  .type.poison { background: #a33ea1; }
+  .type.ground { background: #e2bf65; }
+  .type.rock { background: #b6a136; }
+  .type.bug { background: #a6b91a; }
+  .type.ghost { background: #735797; }
+  .type.steel { background: #b7b7ce; }
+
+  h3 {
+    margin: 1.5rem 0 1rem;
+    color: #264653;
+    font-size: 1.1rem;
+  }
+
+  .stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .stat-name {
+    width: 40px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .stat-bar {
+    flex: 1;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .stat-fill {
+    height: 100%;
+    background: #2a9d8f;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .stat-value {
+    width: 30px;
+    text-align: right;
+    font-weight: 600;
+    color: #2a9d8f;
+  }
+
+  .adopt-action {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  #adopt-btn {
+    background: #e76f51;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(231, 111, 81, 0.4);
+  }
+
+  #adopt-btn:hover {
+    background: #d45d43;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 111, 81, 0.5);
+  }
+</style>
